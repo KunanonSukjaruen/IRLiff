@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Display User Info via LIFF</title>
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+  <center>
+    <h1>User Information</h1>
+    <p id="userInfo">Loading user information...</p>
+  </center>
+
+  <script>
+    const xurl = "https://script.google.com/macros/s/AKfycbxhKPDdM3l2kTdXrvXC-qcWgcWV4L-SNUvlPYBCii4qpLjsVmhc50Cas-PkjQV3wP0j/exec"; // Replace YOUR_SCRIPT_ID with your actual Script ID
+
+    window.onload = function() {
+      initializeLiff('1606478942-pB2qaWE1'); // Replace 'YOUR_LIFF_ID' with your actual LIFF ID.
+    }
+
+    function initializeLiff(myLiffId) {
+      liff.init({ liffId: myLiffId }).then(() => {
+        if (liff.isLoggedIn()) {
+          liff.getProfile().then(profile => {
+            const userInfo = `
+              <p>User ID: ${profile.userId}</p>
+              <p>Name: ${profile.displayName}</p>
+            `;
+            document.getElementById('userInfo').innerHTML = userInfo;
+            sendUserInfo(profile.userId, profile.displayName);
+          }).catch(err => console.error('Failed to get user profile:', err));
+        } else {
+          liff.login();
+        }
+      }).catch(err => {
+        console.error('LIFF Initialization failed:', err);
+      });
+    }
+
+    function sendUserInfo(userId, displayName) {
+      var xmlhttp = new XMLHttpRequest();
+      var theUrl = `${xurl}?user=${userId}&name=${displayName}`;
+      xmlhttp.open('GET', theUrl);
+      xmlhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          console.log('Response from server:', this.responseText);
+        }
+      };
+      xmlhttp.send();
+    }
+  </script>
+</body>
+</html>
