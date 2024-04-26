@@ -1,74 +1,175 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LIFF User Info Display</title>
-  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Portal</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .container {
+            width: 80%;
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        input[type="text"], button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+        }
+        button {
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button:disabled {
+            background-color: #ccc;
+        }
+        #registerPage, #redeemPage {
+            display: none;
+        }
+    </style>
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        let userInfo = {};
+
+        function initializeLiff(myLiffId) {
+            liff.init({
+                liffId: myLiffId
+            }).then(() => {
+                if (liff.isLoggedIn()) {
+                    liff.getProfile().then(profile => {
+                        userInfo.uid = profile.userId;
+                        checkUserRegistration(profile.userId);
+                    }).catch(err => console.error('Failed to get user profile:', err));
+                } else {
+                    liff.login();
+                }
+            }).catch(err => console.error('LIFF Initialization failed:', err));
+        }
+
+        function checkUserRegistration(uid) {
+            // Replace this URL with your Apps Script endpoint
+            const url = `https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=checkUID&uid=${uid}`;
+
+            fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.found) {
+                    displayRedeemPage(data);
+                } else {
+                    displayRegisterPage();
+                }
+            }).catch(error => console.error('Error:', error));
+        }
+
+        function displayRedeemPage(data) {
+            // Fill in the data and display the redeem page
+            document.getElementById('redeemEmpNo').textContent = data.empNo;
+            document.getElementById('redeemName').textContent = data.name;
+            document.getElementById('redeemDivision').textContent = data.division;
+            document.getElementById('redeemPage').style.display = 'block';
+            // Assume data.points has the point value
+            document.getElementById('redeemPoints').textContent = data.points;
+        }
+
+        function displayRegisterPage() {
+            // Display the register page
+            document.getElementById('registerPage').style.display = 'block';
+        }"  continue        // Continue JavaScript for redeeming and registering
+        function redeemCode() {
+            const redeemCode = document.getElementById('redeemCodeInput').value;
+            const redeemUrl = `https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=redeem&uid=${userInfo.uid}&code=${redeemCode}`;
+
+            fetch(redeemUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Code redeemed successfully!');
+                    // Update points or take necessary action
+                } else {
+                    alert('Failed to redeem code. Please try again.');
+                }
+            }).catch(error => console.error('Error redeeming code:', error));
+        }
+
+        function checkRegistration() {
+            const empNo = document.getElementById('regEmpNo').value;
+            const empDate = document.getElementById('regEmpDate').value;
+            const checkRegUrl = `https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=checkRegistration&empNo=${empNo}&empDate=${empDate}`;
+
+            fetch(checkRegUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data.valid) {
+                    document.getElementById('regName').value = data.name;
+                    document.getElementById('regDivision').value = data.division;
+                    document.getElementById('regFactory').value = data.factory;
+                    // Enable register button if the check is successful
+                    document.getElementById('registerBtn').disabled = false;
+                } else {
+                    alert('Employee not found or date does not match our records.');
+                }
+            }).catch(error => console.error('Error checking registration:', error));
+        }
+
+        function registerEmployee() {
+            const regUrl = `https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=register&uid=${userInfo.uid}&empNo=${userInfo.empNo}`;
+
+            fetch(regUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data.registered) {
+                    alert('Registration successful!');
+                    displayRedeemPage(data); // Show redeem page after registration
+                } else {
+                    alert('Registration failed. Please try again.');
+                }
+            }).catch(error => console.error('Error registering employee:', error));
+        }
+
+        window.onload = function() {
+            initializeLiff('1606478942-pB2qaWE1'); // Replace with your actual LIFF ID
+        };
+    </script>
 </head>
 <body>
-  <center>
-    <h1>User Information</h1>
-    <p id="userInfo">Loading user information...</p>
-    <p id="additionalInfo"></p>
-    <button id="saveButton" style="display:none;" onclick="saveData()">Save Data</button>
-  </center>
+    <div class="container" id="redeemPage">
+        <h2>Redeem Page</h2>
+        <div>EmpNo : <span id="redeemEmpNo"></span></div>
+        <div>Name : <span id="redeemName"></span></div>
+        <div>Division : <span id="redeemDivision"></span></div>
+        <div>คะแนนสะสม : <span id="redeemPoints"></span></div>
+        <input type="text" id="redeemCodeInput" placeholder="Enter redeem code">
+        <button onclick="redeemCode()">Redeem</button>
+    </div>
 
-  <script>
-    const xurl = "https://script.google.com/macros/s/AKfycbxhKPDdM3l2kTdXrvXC-qcWgcWV4L-SNUvlPYBCii4qpLjsVmhc50Cas-PkjQV3wP0j/exec";
-
-    window.onload = function() {
-      initializeLiff('1606478942-pB2qaWE1');
-    };
-
-    function initializeLiff(myLiffId) {
-      liff.init({ liffId: myLiffId }).then(() => {
-        if (liff.isLoggedIn()) {
-          liff.getProfile().then(profile => {
-            displayUserInfo(profile.userId, profile.displayName);
-            checkAndDisplayAdditionalInfo(profile.userId);
-            document.getElementById('saveButton').style.display = 'block';
-          }).catch(err => console.error('Failed to get user profile:', err));
-        } else {
-          liff.login();
-        }
-      }).catch(err => console.error('LIFF Initialization failed:', err));
-    }
-
-    function displayUserInfo(userId, userName) {
-      document.getElementById('userInfo').innerHTML = `<p>User ID: ${userId}</p><p>Name: ${userName}</p>`;
-    }
-
-    function checkAndDisplayAdditionalInfo(userId) {
-      fetch(`${xurl}?action=checkUser&uid=${userId}`)
-        .then(response => response.json())
-        .then(data => {
-          if (data.found) {
-            document.getElementById('additionalInfo').innerHTML = `Employee Number: ${data.empNo}<br>Name: ${data.name}<br>Additional Info: ${data.additionalInfo}`;
-          } else {
-            document.getElementById('additionalInfo').textContent = 'No additional information found.';
-          }
-        })
-        .catch(error => console.error('Failed to load additional information:', error));
-    }
-
-    function saveData() {
-      liff.getProfile().then(profile => {
-        const data = {
-          userId: profile.userId,
-          userName: profile.displayName
-        };
-
-        fetch(xurl, {
-          method: 'POST',
-          contentType: 'application/json',
-          body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => console.log('Data saved:', data))
-        .catch(error => console.error('Error saving data:', error));
-      });
-    }
-  </script>
+    <div class="container" id="registerPage">
+        <h2>Register Page</h2>
+        <input type="text" id="regEmpNo" placeholder="EmpNo.">
+        <input type="text" id="regEmpDate" placeholder="วันเดือนปีที่เข้างาน YYYYMMDD">
+        <button onclick="checkRegistration()">ตรวจสอบ</button>
+        <input type="text" id="regName" placeholder="Name" disabled>
+        <input type="text" id="regDivision" placeholder="Division" disabled>
+        <input type="text" id="regFactory" placeholder="Factory" disabled>
+        <button id="registerBtn" onclick="registerEmployee()" disabled>สมัครเข้าร่วมกิจกรรม</button>
+    </div>
 </body>
 </html>
