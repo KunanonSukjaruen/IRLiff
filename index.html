@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Display User Info via LIFF</title>
+  <title>LIFF User Info Display</title>
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
@@ -13,66 +13,24 @@
   </center>
 
   <script>
-    const xurl = "https://script.google.com/macros/s/AKfycbxhKPDdM3l2kTdXrvXC-qcWgcWV4L-SNUvlPYBCii4qpLjsVmhc50Cas-PkjQV3wP0j/exec"; // Replace YOUR_SCRIPT_ID with your actual Script ID
+    const xurl = "https://script.google.com/macros/s/AKfycbxhKPDdM3l2kTdXrvXC-qcWgcWV4L-SNUvlPYBCii4qpLjsVmhc50Cas-PkjQV3wP0j/exec"; // Replace this URL with your actual Google Apps Script deployment URL
 
     window.onload = function() {
-      initializeLiff('1606478942-pB2qaWE1'); // Use your actual LIFF ID
-    }
+      initializeLiff('1606478942-pB2qaWE1'); // Replace '1606478942-pB2qaWE1' with your actual LIFF ID
+    };
 
     function initializeLiff(myLiffId) {
-      liff.init({ liffId: myLiffId }).then(() => {
+      liff.init({
+        liffId: myLiffId
+      }).then(() => {
         if (liff.isLoggedIn()) {
           liff.getProfile().then(profile => {
-            sendUserInfo(profile.userId, profile.displayName);
+            document.getElementById('userInfo').innerHTML = `<p>User ID: ${profile.userId}</p><p>Name: ${profile.displayName}</p>`;
           }).catch(err => console.error('Failed to get user profile:', err));
         } else {
           liff.login();
         }
       }).catch(err => console.error('LIFF Initialization failed:', err));
-    }
-
-    function sendUserInfo(userId, displayName) {
-      var xmlhttp = new XMLHttpRequest();
-      var theUrl = `${xurl}?user=${userId}&name=${displayName}`;
-      xmlhttp.open('GET', theUrl);
-      xmlhttp.onreadystatechange = function() {
-        if (this.readyState == 4) {
-          if (this.status == 200) {
-            var response = JSON.parse(this.responseText);
-            if (response.status === "Found") {
-              document.getElementById('userInfo').innerHTML = `<p>Employee No: ${response.empNo}</p><p>Name: ${response.name}</p>`;
-            } else {
-              showRegistrationForm(userId);
-            }
-          } else {
-            console.error('HTTP error', this.status, this.responseText);
-            document.getElementById('userInfo').innerHTML = 'Error loading user information. Please try again.';
-          }
-        }
-      };
-      xmlhttp.onerror = function () {
-        console.error('Network error.');
-        document.getElementById('userInfo').innerHTML = 'Network error. Please check your connection and try again.';
-      };
-      xmlhttp.send();
-    }
-
-    function showRegistrationForm(userId) {
-      var formHtml = `
-        <form onsubmit="registerUser(event, '${userId}')">
-          <input type="text" id="empNo" placeholder="Enter Employee Number" required />
-          <input type="text" id="name" placeholder="Enter Name" required />
-          <button type="submit">Register</button>
-        </form>
-      `;
-      document.getElementById('userInfo').innerHTML = formHtml;
-    }
-
-    function registerUser(e, userId) {
-      e.preventDefault();
-      var empNo = document.getElementById('empNo').value;
-      var name = document.getElementById('name').value;
-      sendUserInfo(userId, name, empNo); // Adjust this to handle registration
     }
   </script>
 </body>
