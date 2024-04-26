@@ -10,10 +10,11 @@
   <center>
     <h1>User Information</h1>
     <p id="userInfo">Loading user information...</p>
+    <button id="saveButton" style="display:none;" onclick="saveData()">Save Data</button>
   </center>
 
   <script>
-    const xurl = "https://script.google.com/macros/s/AKfycbxhKPDdM3l2kTdXrvXC-qcWgcWV4L-SNUvlPYBCii4qpLjsVmhc50Cas-PkjQV3wP0j/exec"; // Replace this URL with your actual Google Apps Script deployment URL
+    const xurl = "https://script.google.com/macros/s/AKfycbxhKPDdM3l2kTdXrvXC-qcWgcWV4L-SNUvlPYBCii4qpLjsVmhc50Cas-PkjQV3wP0j/exec"; // Replace with your actual Endpoint URL
 
     window.onload = function() {
       initializeLiff('1606478942-pB2qaWE1'); // Replace '1606478942-pB2qaWE1' with your actual LIFF ID
@@ -25,12 +26,35 @@
       }).then(() => {
         if (liff.isLoggedIn()) {
           liff.getProfile().then(profile => {
-            document.getElementById('userInfo').innerHTML = `<p>User ID: ${profile.userId}</p><p>Name: ${profile.displayName}</p>`;
+            displayUserInfo(profile.userId, profile.displayName);
+            document.getElementById('saveButton').style.display = 'block';
           }).catch(err => console.error('Failed to get user profile:', err));
         } else {
           liff.login();
         }
       }).catch(err => console.error('LIFF Initialization failed:', err));
+    }
+
+    function displayUserInfo(userId, userName) {
+      document.getElementById('userInfo').innerHTML = `<p>User ID: ${userId}</p><p>Name: ${userName}</p>`;
+    }
+
+    function saveData() {
+      const userId = liff.getProfile().then(profile => {
+        const data = {
+          userId: profile.userId,
+          userName: profile.displayName
+        };
+
+        fetch(xurl, {
+          method: 'POST',
+          contentType: 'application/json',
+          body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => console.log('Data saved:', data))
+        .catch(error => console.error('Error saving data:', error));
+      });
     }
   </script>
 </body>
