@@ -25,7 +25,6 @@
             <h2>Register Page</h2>
             <input type="text" id="empNoInput" placeholder="Enter Employee Number">
             <input type="date" id="empDateInput" placeholder="Enter Employment Date">
-            <input type="hidden" id="uidInput"> <!-- Hidden field for UID -->
             <button onclick="registerUser()">Check and Register</button>
         </div>
     </div>
@@ -97,8 +96,8 @@
         function registerUser() {
             const empNo = document.getElementById('empNoInput').value;
             const empDate = document.getElementById('empDateInput').value;
-            const uid = document.getElementById('uidInput').value; // Get UID from hidden input
-            fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=registerUser&empNo=${empNo}&empDate=${empDate}&uid=${uid}`)
+            const uid = liff.getContext().userId; // Get UID from LIFF context
+            fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=registerUser&empNo=' + empNo + '&empDate=' + empDate + '&uid=' + uid)
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('alertMessage').textContent = data.message;
