@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>LIFF App 23:17</title>
+    <title>LIFF App 00:44</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
@@ -99,23 +99,33 @@
         }
 
         // Function to handle user registration
-            function registerUser() {
-                const empNo = document.getElementById('empNoInput').value;
-                const empDate = document.getElementById('empDateInput').value;
-                if (liff.isLoggedIn()) {
-                    liff.getProfile().then(profile => {
-                        const uid = profile.userId;
-                        fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=registerUser&empNo=${empNo}&empDate=${empDate}&uid=${uid}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                document.getElementById('alertMessage').textContent = data.message;
-                                if (data.success) {
-                                    // Optionally switch to redeem page or inform user
-                                }
-                            });
-                    });
-                }
-            }
+function registerUser() {
+  const empNo = document.getElementById('empNoInput').value;
+  const empDate = document.getElementById('empDateInput').value;
+  if (liff.isLoggedIn()) {
+    liff.getProfile().then(profile => {
+      const uid = profile.userId;
+      const data = new FormData();
+      data.append('action', 'registerUser');
+      data.append('empNo', empNo);
+      data.append('empDate', empDate);
+      data.append('uid', uid);
+
+      fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec', {
+        method: 'POST',
+        body: data
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('alertMessage').textContent = data.message;
+        if (data.success) {
+          // Optionally switch to redeem page or inform user
+        }
+      });
+    });
+  }
+}
+
     </script>
 </body>
 </html>
