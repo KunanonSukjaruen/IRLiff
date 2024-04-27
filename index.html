@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>LIFF App 21:09</title>
+    <title>LIFF App 22:32</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
@@ -58,7 +58,7 @@ function initializeLiff(myLiffId) {
     }
         // Function to fetch user data based on UID from LIFF
         function getUserData() {
-            const uid = liff.getContext().userId;
+            const uid = profile.userId;
             fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=getUserData&uid=' + uid)
                 .then(response => response.json())
                 .then(data => {
