@@ -24,7 +24,8 @@
         <div id="registerSection" style="display:none;">
             <h2>Register Page</h2>
             <input type="text" id="empNoInput" placeholder="Enter Employee Number">
-            <input type="text" id="empDateInput" placeholder="Enter Employment Date">
+            <input type="date" id="empDateInput" placeholder="Enter Employment Date">
+            <input type="hidden" id="uidInput"> <!-- Hidden field for UID -->
             <button onclick="registerUser()">Check and Register</button>
         </div>
     </div>
@@ -37,15 +38,17 @@
         function initializeLiff() {
             liff.init({
                 liffId: '1606478942-pB2qaWE1' // Replace this with your LIFF ID
-            }).then(() => {
-                if (!liff.isLoggedIn()) {
-                    liff.login();
-                }
-                getUserData();
-            }).catch(err => {
-                console.error('LIFF initialization failed', err);
-            });
-        }
+                }).then(() => {
+                    if (!liff.isLoggedIn()) {
+                        liff.login();
+                    }
+                    const uid = liff.getContext().userId;
+                    document.getElementById('uidInput').value = uid; // Set UID to hidden input
+                    getUserData(uid);
+                }).catch(err => {
+                    console.error('LIFF initialization failed', err);
+                });
+            }
 
         // Function to fetch user data based on UID from LIFF
         function getUserData() {
@@ -94,15 +97,33 @@
         function registerUser() {
             const empNo = document.getElementById('empNoInput').value;
             const empDate = document.getElementById('empDateInput').value;
-            fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=registerUser&empNo=' + empNo + '&empDate=' + empDate + '&uid=' + uid)
+            const uid = document.getElementById('uidInput').value; // Get UID from hidden input
+            fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=registerUser&empNo=${empNo}&empDate=${empDate}&uid=${uid}`)
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('alertMessage').textContent = data.message;
                     if (data.success) {
-                        // Optionally switch to redeem page or inform user
-                    }
-                });
-        }
+                displayRedeemSectionAfterRegistration(empNo, uid);
+            }
+        });
+}
+
+// Function to display redeem section after successful registration
+function displayRedeemSectionAfterRegistration(empNo, uid) {
+    // Fetch user data to fill the redeem section
+    fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=getUserData&uid=' + uid)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayRedeemSection(data.data);  // Assuming this function already sets the appropriate fields
+                document.getElementById('redeemSection').style.display = 'block';
+                document.getElementById('registerSection').style.display = 'none';
+                document.getElementById('alertMessage').textContent = 'Registration successful! Proceed to redeem your points.';
+            } else {
+                document.getElementById('alertMessage').textContent = 'Error fetching user data for redeem section.';
+            }
+        });
+}
 
         // Call initialize function on load
         window.onload = initializeLiff;
