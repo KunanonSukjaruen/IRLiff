@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>LIFF App</title>
+    <title>LIFF App 18:12</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
@@ -34,20 +34,19 @@
 
     <script>
         // Initialize LIFF app
-        function initializeLiff() {
-            liff.init({
-                liffId: '1606478942-pB2qaWE1' // Replace this with your LIFF ID
-                }).then(() => {
-                    if (!liff.isLoggedIn()) {
-                        liff.login();
-                    }
-                    const uid = liff.getContext().userId;
-                    document.getElementById('uidInput').value = uid; // Set UID to hidden input
-                    getUserData(uid);
-                }).catch(err => {
-                    console.error('LIFF initialization failed', err);
-                });
-            }
+function initializeLiff() {
+    liff.init({ liffId: '1606478942-pB2qaWE1' }).then(() => {
+        if (!liff.isLoggedIn()) {
+            liff.login();
+        } else {
+            const uid = liff.getContext().userId;
+            getUserData(uid); // ทำการดึงข้อมูลผู้ใช้ต่อไป
+        }
+    }).catch(err => {
+        console.error('LIFF initialization failed', err);
+    });
+}
+
 
         // Function to fetch user data based on UID from LIFF
         function getUserData() {
