@@ -94,7 +94,7 @@
         function registerUser() {
             const empNo = document.getElementById('empNoInput').value;
             const empDate = document.getElementById('empDateInput').value;
-            fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=registerUser&empNo=' + empNo + '&empDate=' + empDate)
+            fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=registerUser&empNo=' + empNo + '&empDate=' + empDate + '&uid=' + uid)
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('alertMessage').textContent = data.message;
