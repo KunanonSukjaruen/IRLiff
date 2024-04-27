@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>LIFF App</title>
+    <title>LIFF App 20:41</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
@@ -35,24 +35,13 @@
 
     <script>
             // Call initialize function on load
-        window.onload = initializeLiff;
+        function() {
+      initializeLiff('1606478942-pB2qaWE1');
+    };
         // Initialize LIFF app
-        function initializeLiff() {
-            liff.init({
-                liffId: '1606478942-pB2qaWE1' // Replace this with your LIFF ID
-            }).then(() => {
-                if (!liff.isLoggedIn()) {
-                    liff.login();
-                }
-                getUserData();
-            }).catch(err => {
-                console.error('LIFF initialization failed', err);
-            });
-        }
-
-      function initializeLiff() {
+function initializeLiff(myLiffId) {
       liff.init({
-        liffId: '1606478942-pB2qaWE1'
+        liffId: myLiffId
       }).then(() => {
         if (liff.isLoggedIn()) {
           liff.getProfile().then(profile => {
