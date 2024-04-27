@@ -2,12 +2,12 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>LIFF App 20:41</title>
+    <title>LIFF App 21:09</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
     <!-- Section to display user information or registration form -->
-    <div id="userInfo">Loading user information...</div>
+    <p id="userInfo">Loading user information...</p>
     <div id="userContent">
         <!-- User Redemption Page -->
         <div id="redeemSection" style="display:none;">
@@ -46,7 +46,7 @@ function initializeLiff(myLiffId) {
         if (liff.isLoggedIn()) {
           liff.getProfile().then(profile => {
             displayUserInfo(profile.userId, profile.displayName);
-            getUserData();
+            getUserData()
           }).catch(err => console.error('Failed to get user profile:', err));
         } else {
           liff.login();
